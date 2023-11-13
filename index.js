@@ -32,7 +32,7 @@ const bs58 = require("bs58")
 //
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 //
 
 const endpoint =
@@ -216,6 +216,7 @@ async function createToken(name, symbol, description, imaUrl) {
     return `View Token Mint: https://explorer.solana.com/address/${mintKeypair.publicKey.toString()}?cluster=devnet`
 }
 
+app.use(cors());
 app.use(express.json());
 app.post('/api/createToken', async (req, res) => {
     console.log(`POST request: `, req.body)
