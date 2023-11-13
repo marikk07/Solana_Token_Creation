@@ -226,6 +226,14 @@ const corsOptions = {
 };
 
 
+app.use(cors())
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://solana-react-51215b181a0c.herokuapp.com');
+    // You can use '*' to allow requests from any origin, but be cautious with this option.
+    // res.setHeader('Access-Control-Allow-Origin', '*');
+    next();
+});
 
 app.post('/api/createToken', async (req, res) => {
     console.log(`POST request: `, req.body)
@@ -245,6 +253,5 @@ app.post('/api/createToken', async (req, res) => {
 });
 
 app.listen(port, () => {
-    app.use(cors())
-    console.log(`Server is listening at http://localhost:${port}`);
+    console.log(`Server is listening at port: ${port}`);
 });
