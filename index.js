@@ -237,8 +237,8 @@ app.use((req, res, next) => {
 
 app.post('/api/createToken', async (req, res) => {
     console.log(`POST request: `, req.body)
-    const { tokenName, tokenSymbol, description, imageUrl } = req.body;
-    res.json({ message: 'Token created successfully', result });
+    // const { tokenName, tokenSymbol, description, imageUrl } = req.body;
+    res.json({ message: 'Token created successfully', req.body });
     // try {
     //     // Call the async function to create a token using the provided parameters
     //     const result = await createToken(tokenName, tokenSymbol, description, imageUrl);
