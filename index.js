@@ -225,7 +225,7 @@ const corsOptions = {
     optionsSuccessStatus: 204,
 };
 
-app.use(cors())
+
 
 app.post('/api/createToken', async (req, res) => {
     console.log(`POST request: `, req.body)
@@ -244,5 +244,6 @@ app.post('/api/createToken', async (req, res) => {
 });
 
 app.listen(port, () => {
+    app.use(cors())
     console.log(`Server is listening at http://localhost:${port}`);
 });
