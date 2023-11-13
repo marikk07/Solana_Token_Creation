@@ -237,19 +237,18 @@ app.use((req, res, next) => {
 
 app.post('/api/createToken', async (req, res) => {
     console.log(`POST request: `, req.body)
-    res.json({ message: 'Token created successfully' });
-    // const { tokenName, tokenSymbol, description, imageUrl } = req.body;
-    // try {
-    //     // Call the async function to create a token using the provided parameters
-    //     const result = await createToken(tokenName, tokenSymbol, description, imageUrl);
-    //     console.log(result);
-    //
-    //     // Your API function logic goes here
-    //     res.json({ message: 'Token created successfully', result });
-    // } catch (error) {
-    //     console.error('Error in API endpoint:', error);
-    //     res.status(500).json({ error: 'Internal Server Error' });
-    // }
+    const { tokenName, tokenSymbol, description, imageUrl } = req.body;
+    try {
+        // Call the async function to create a token using the provided parameters
+        const result = await createToken(tokenName, tokenSymbol, description, imageUrl);
+        console.log(result);
+
+        // Your API function logic goes here
+        res.json({ message: 'Token created successfully', result });
+    } catch (error) {
+        console.error('Error in API endpoint:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 app.listen(port, () => {
