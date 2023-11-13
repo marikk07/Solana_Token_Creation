@@ -33,6 +33,7 @@ const bs58 = require("bs58")
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 3000;
+const cors = require('cors');
 //
 
 const endpoint =
@@ -216,8 +217,16 @@ async function createToken(name, symbol, description, imaUrl) {
     return `View Token Mint: https://explorer.solana.com/address/${mintKeypair.publicKey.toString()}?cluster=devnet`
 }
 
-app.use(cors());
-app.use(express.json());
+// Configure CORS to allow requests from your frontend origin
+const corsOptions = {
+    origin: 'https://solana-react-51215b181a0c.herokuapp.com',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // If you are using cookies or sessions
+    optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+
 app.post('/api/createToken', async (req, res) => {
     console.log(`POST request: `, req.body)
     const { tokenName, tokenSymbol, description, imageUrl } = req.body;
