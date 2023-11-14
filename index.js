@@ -29,13 +29,6 @@ const {
 } = require("@metaplex-foundation/js");
 const bs58 = require("bs58")
 
-//
-const express = require('express');
-const app = express();
-const port = process.env.PORT || 3000;
-const cors = require('cors');
-//
-
 const endpoint =
     "https://aged-few-gas.solana-devnet.quiknode.pro/709859f8e8b4d80991023ddd417b320d0e139e84/" //Replace with your RPC Endpoint
 const solanaConnection = new Connection(clusterApiUrl("devnet")) //new Connection(endpoint);
@@ -217,39 +210,47 @@ async function createToken(name, symbol, description, imaUrl) {
     return `View Token Mint: https://explorer.solana.com/address/${mintKeypair.publicKey.toString()}?cluster=devnet`
 }
 
+
+//
+const express = require('express');
+const app = express();
+const port = process.env.PORT || 3000;
+
+const cors = require('cors');
+//
+
 // Configure CORS to allow requests from your frontend origin
-const corsOptions = {
-    origin: 'https://solana-react-51215b181a0c.herokuapp.com',
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    credentials: true, // If you are using cookies or sessions
-    optionsSuccessStatus: 204,
-};
+// const corsOptions = {
+//     origin: 'https://solana-react-51215b181a0c.herokuapp.com',
+//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//     credentials: true, // If you are using cookies or sessions
+//     optionsSuccessStatus: 204,
+// };
 
-
+app.use(express.json());
 app.use(cors())
 
-app.use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', 'https://solana-react-51215b181a0c.herokuapp.com');
-    // You can use '*' to allow requests from any origin, but be cautious with this option.
-    // res.setHeader('Access-Control-Allow-Origin', '*');
-    next();
-});
+// app.use((req, res, next) => {
+//     res.setHeader('Access-Control-Allow-Origin', 'https://solana-react-51215b181a0c.herokuapp.com');
+//     // You can use '*' to allow requests from any origin, but be cautious with this option.
+//     // res.setHeader('Access-Control-Allow-Origin', '*');
+//     next();
+// });
 
 app.post('/api/createToken', async (req, res) => {
     console.log(`POST request: `, req.body)
-    // const { tokenName, tokenSymbol, description, imageUrl } = req.body;
-    res.json({ message: 'Token created successfully'});
-    // try {
-    //     // Call the async function to create a token using the provided parameters
-    //     const result = await createToken(tokenName, tokenSymbol, description, imageUrl);
-    //     console.log(result);
-    //
-    //     // Your API function logic goes here
-    //     res.json({ message: 'Token created successfully', result });
-    // } catch (error) {
-    //     console.error('Error in API endpoint:', error);
-    //     res.status(500).json({ error: 'Internal Server Error' });
-    // }
+    const { tokenName, tokenSymbol, description, imageUrl } = req.body;
+    try {
+        // Call the async function to create a token using the provided parameters
+        const result = await createToken(tokenName, tokenSymbol, description, imageUrl);
+        console.log(result);
+
+        // Your API function logic goes here
+        res.json({ message: 'Token created successfully', result });
+    } catch (error) {
+        console.error('Error in API endpoint:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
 });
 
 app.listen(port, () => {
