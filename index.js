@@ -49,10 +49,10 @@ const metaplex = Metaplex.make(solanaConnection)
         })
     )
 
-const MINT_CONFIG = {
-    numDecimals: numDecimals,
-    numberTokens: 100
-}
+// const MINT_CONFIG = {
+//     numDecimals: numDecimals,
+//     numberTokens: 100
+// }
 
 /**
  *
@@ -74,7 +74,9 @@ const createNewMintTransaction = async (
     destinationWallet,
     mintAuthority,
     freezeAuthority,
-    ON_CHAIN_METADATA
+    ON_CHAIN_METADATA,
+    numDecimals,
+    amount
 ) => {
     //Get the minimum lamport balance to create a new account and avoid rent payments
     const requiredBalance = await getMinimumBalanceForRentExemptMint(connection)
@@ -100,7 +102,7 @@ const createNewMintTransaction = async (
         createInitializeMintInstruction(
             //Mint Address
             mintKeypair.publicKey, //Number of Decimals of New mint
-            MINT_CONFIG.numDecimals, //Mint Authority
+            numDecimals, //Mint Authority
             mintAuthority, //Freeze Authority
             freezeAuthority,
             TOKEN_PROGRAM_ID
@@ -117,7 +119,7 @@ const createNewMintTransaction = async (
             mintKeypair.publicKey, //Destination Token Account
             tokenATA, //Authority
             mintAuthority, //number of tokens
-            MINT_CONFIG.numberTokens * Math.pow(10, MINT_CONFIG.numDecimals)
+            amount * Math.pow(10, numDecimals)
         ),
         createCreateMetadataAccountV3Instruction(
             {
@@ -141,7 +143,7 @@ const createNewMintTransaction = async (
 }
 
 
-async function createToken(name, symbol, description, imaUrl) {
+async function createToken(name, symbol, description, imaUrl, decimals, numberTokens) {
     console.log(`---STEP 1: Prepare MetaData---`)
     const MY_TOKEN_METADATA = {
         name: name,
@@ -176,7 +178,9 @@ async function createToken(name, symbol, description, imaUrl) {
         userWallet.publicKey,
         userWallet.publicKey,
         userWallet.publicKey,
-        ON_CHAIN_METADATA
+        ON_CHAIN_METADATA,
+        decimals,
+        numberTokens
     )
 
     console.log(solanaConnection.description)
@@ -196,7 +200,7 @@ async function createToken(name, symbol, description, imaUrl) {
     )
     console.log(`Transaction ID: `, transactionId)
     console.log(
-        `Succesfully minted ${MINT_CONFIG.numberTokens} ${
+        `Succesfully minted ${numberTokens} ${
             ON_CHAIN_METADATA.symbol
         } to ${userWallet.publicKey.toString()}.`
     )
@@ -217,32 +221,16 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const cors = require('cors');
-//
-
-// Configure CORS to allow requests from your frontend origin
-// const corsOptions = {
-//     origin: 'https://solana-react-51215b181a0c.herokuapp.com',
-//     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-//     credentials: true, // If you are using cookies or sessions
-//     optionsSuccessStatus: 204,
-// };
 
 app.use(express.json());
 app.use(cors())
 
-// app.use((req, res, next) => {
-//     res.setHeader('Access-Control-Allow-Origin', 'https://solana-react-51215b181a0c.herokuapp.com');
-//     // You can use '*' to allow requests from any origin, but be cautious with this option.
-//     // res.setHeader('Access-Control-Allow-Origin', '*');
-//     next();
-// });
-
 app.post('/api/createToken', async (req, res) => {
     console.log(`POST request: `, req.body)
-    const { tokenName, tokenSymbol, description, imageUrl } = req.body;
+    const { tokenName, tokenSymbol, description, imageUrl,  decimals, numberOfTokens} = req.body;
     try {
         // Call the async function to create a token using the provided parameters
-        const result = await createToken(tokenName, tokenSymbol, description, imageUrl);
+        const result = await createToken(tokenName, tokenSymbol, description, imageUrl, decimals, numberOfTokens);
         console.log(result);
 
         // Your API function logic goes here
